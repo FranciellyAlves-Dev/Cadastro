@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum TipoPessoa {
+  CPF
+  CNPJ
+}
+
+model Cliente {
+  id        Int        @id @default(autoincrement())
+  nome      String
+  email     String     @unique
+  whatsapp  String?
+  tipo      TipoPessoa
+  cpf       String?    @unique
+  cnpj      String?    @unique
+  enderecos Endereco[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Endereco {
+  id        Int      @id @default(autoincrement())
+  cep       String
+  rua       String
+  bairro    String
+  cidade    String
+  clienteId Int
+  cliente   Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clienteId])
+}
